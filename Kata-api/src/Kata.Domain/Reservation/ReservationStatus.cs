@@ -6,5 +6,5 @@ public enum ReservationStatus
     Borrowed = 1,
     Returned = 2,
     Cancelled = 3,
-    
+    Expired = 4,
 }

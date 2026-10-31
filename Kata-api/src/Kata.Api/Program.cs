@@ -33,7 +33,9 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 app.UseCors(clientCorsPolicy);
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
+   .WithTags("Health")
+   .WithSummary("Liveness probe");
 app.MapEndpoints();
 
 app.Run();

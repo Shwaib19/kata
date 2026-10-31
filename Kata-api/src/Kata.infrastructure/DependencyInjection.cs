@@ -1,4 +1,6 @@
+using Kata.Application.Features.Book;
 using Kata.infrastructure.Database;
+using Kata.infrastructure.Features.Book;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +25,12 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("Database")));
 
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+
+        // One class backs both contracts: callers still depend on the narrow interface
+        // they need, while the registration keeps a single EF Core implementation.
+        services.AddScoped<EfBookRepository>();
+        services.AddScoped<IBookReadRepository>(provider => provider.GetRequiredService<EfBookRepository>());
+        services.AddScoped<IBookWriteRepository>(provider => provider.GetRequiredService<EfBookRepository>());
 
         return services;
     }

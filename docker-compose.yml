@@ -1,0 +1,20 @@
+services:
+  database:
+    image: postgres:18.1-alpine
+    container_name: kata-database
+    environment:
+      POSTGRES_DB: kata
+      POSTGRES_USER: kata
+      POSTGRES_PASSWORD: kata
+    ports:
+      - "5432:5432"
+    volumes:
+      - kata-database-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kata -d kata"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  kata-database-data:

@@ -118,4 +118,27 @@ public class BookTest
         Assert.True(result.IsSuccess);
         Assert.Equal(Now.Year, result.Value.PublicationYear);
     }
+
+    [Fact]
+    public void Delete_Should_Take_The_Book_Out_Of_The_Catalogue()
+    {
+        Book book = Book.Create(BookTitle, BookAuthor, PublicationYear, _dateTimeProvider).Value;
+
+        book.Delete();
+
+        Assert.True(book.IsDeleted);
+        Assert.NotNull(book.DeletedOnUtc);
+    }
+
+    [Fact]
+    public void Delete_Should_Keep_The_First_Deletion_Date_When_Called_Twice()
+    {
+        Book book = Book.Create(BookTitle, BookAuthor, PublicationYear, _dateTimeProvider).Value;
+        book.Delete();
+        DateTime? firstDeletion = book.DeletedOnUtc;
+
+        book.Delete();
+
+        Assert.Equal(firstDeletion, book.DeletedOnUtc);
+    }
 }

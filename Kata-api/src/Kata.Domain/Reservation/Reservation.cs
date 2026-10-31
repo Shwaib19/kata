@@ -14,6 +14,11 @@ public class Reservation
     public DateTime? BorrowedAt { get; private set; }
     public DateTime? ReturnedAt { get; private set; }
 
+    // Required by EF Core, which materialises entities without going through Create.
+    private Reservation()
+    {
+    }
+
     private Reservation(Guid bookId, Guid readerId, DateTime reservedAt)
     {
         Id = Guid.NewGuid();

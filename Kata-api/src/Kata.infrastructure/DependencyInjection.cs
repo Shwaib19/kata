@@ -1,5 +1,8 @@
+using Kata.infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SharedKernel;
 
 namespace Kata.infrastructure;
 
@@ -16,7 +19,11 @@ public static class DependencyInjection
     /// <returns>The same service collection, for chaining.</returns>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        
+        services.AddDbContext<KataDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("Database")));
+
+        services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+
         return services;
     }
 }

@@ -99,4 +99,15 @@ public class ReaderTest
         Assert.True(result.IsSuccess);
         Assert.Equal(ReaderEmail, result.Value.Email);
     }
+
+    [Fact]
+    public void Delete_Should_Take_The_Reader_Off_The_Register()
+    {
+        Reader reader = Reader.Create(ReaderName, ReaderEmail).Value;
+
+        reader.Delete();
+
+        Assert.True(reader.IsDeleted);
+        Assert.NotNull(reader.DeletedOnUtc);
+    }
 }

@@ -2,7 +2,7 @@ using SharedKernel;
 
 namespace Kata.Domain.Book;
 
-public class Book
+public class Book : ISoftDeletable
 {
     public const int TitleMaxLength = 50;
 
@@ -10,6 +10,30 @@ public class Book
     public string Title { get; private set; }
     public string? Author { get; private set; }
     public int? PublicationYear { get; init; }
+
+    public bool IsDeleted { get; private set; }
+    public DateTime? DeletedOnUtc { get; private set; }
+
+    /// <summary>
+    /// Takes the book out of circulation without erasing it, so that past reservations
+    /// keep pointing at something. Calling it twice keeps the first deletion date.
+    /// </summary>
+    public void Delete()
+    {
+        if (IsDeleted)
+        {
+            return;
+        }
+
+        IsDeleted = true;
+        DeletedOnUtc = DateTime.UtcNow;
+    }
+
+    // Required by EF Core, which materialises entities without going through Create.
+    private Book()
+    {
+        Title = null!;
+    }
 
     private Book(string title, string? author, int? publicationYear)
     {

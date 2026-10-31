@@ -3,13 +3,38 @@ using SharedKernel;
 
 namespace Kata.Domain.Reader;
 
-public class Reader
+public class Reader : ISoftDeletable
 {
     public const int NameMaxLength = 100;
 
     public Guid Id { get; init; }
     public string Name { get; private set; }
     public string Email { get; private set; }
+
+    public bool IsDeleted { get; private set; }
+    public DateTime? DeletedOnUtc { get; private set; }
+
+    /// <summary>
+    /// Takes the reader out of circulation without erasing it, so that past reservations
+    /// keep pointing at something. Calling it twice keeps the first deletion date.
+    /// </summary>
+    public void Delete()
+    {
+        if (IsDeleted)
+        {
+            return;
+        }
+
+        IsDeleted = true;
+        DeletedOnUtc = DateTime.UtcNow;
+    }
+
+    // Required by EF Core, which materialises entities without going through Create.
+    private Reader()
+    {
+        Name = null!;
+        Email = null!;
+    }
 
     private Reader(string name, string email)
     {

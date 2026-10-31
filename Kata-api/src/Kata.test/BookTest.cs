@@ -1,4 +1,3 @@
-using Kata.Domain;
 using Kata.Domain.Book;
 using SharedKernel;
 
@@ -10,10 +9,14 @@ public class BookTest
     private const string BookAuthor = "Book Author";
     private const int PublicationYear = 2005;
 
+    private static readonly DateTime Now = new(2026, 10, 31, 12, 0, 0, DateTimeKind.Utc);
+
+    private readonly IDateTimeProvider _dateTimeProvider = new FakeDateTimeProvider(Now);
+
     [Fact]
     public void Create_Should_Create_Book_With_The_Title_Author_And_Publication_Year()
     {
-        Result<Book> result = Book.Create(BookTitle, BookAuthor, PublicationYear);
+        Result<Book> result = Book.Create(BookTitle, BookAuthor, PublicationYear, _dateTimeProvider);
 
         Assert.True(result.IsSuccess);
         Assert.NotEqual(Guid.Empty, result.Value.Id);
@@ -28,7 +31,7 @@ public class BookTest
     [InlineData("   ")]
     public void Create_Should_Leave_Author_Unknown_When_Author_Is_Missing(string? missingAuthor)
     {
-        Result<Book> result = Book.Create(BookTitle, missingAuthor, PublicationYear);
+        Result<Book> result = Book.Create(BookTitle, missingAuthor, PublicationYear, _dateTimeProvider);
 
         Assert.True(result.IsSuccess);
         Assert.Null(result.Value.Author);
@@ -37,7 +40,7 @@ public class BookTest
     [Fact]
     public void Create_Should_Leave_Publication_Year_Unknown_When_Publication_Year_Is_Missing()
     {
-        Result<Book> result = Book.Create(BookTitle, BookAuthor, null);
+        Result<Book> result = Book.Create(BookTitle, BookAuthor, null, _dateTimeProvider);
 
         Assert.True(result.IsSuccess);
         Assert.Null(result.Value.PublicationYear);
@@ -49,9 +52,70 @@ public class BookTest
     [InlineData("   ")]
     public void Create_Should_Fail_When_Title_Is_Missing(string? missingTitle)
     {
-        Result<Book> result = Book.Create(missingTitle, BookAuthor, PublicationYear);
+        Result<Book> result = Book.Create(missingTitle, BookAuthor, PublicationYear, _dateTimeProvider);
 
         Assert.True(result.IsFailure);
         Assert.Equal(BookErrors.TitleRequired, result.Error);
+    }
+
+    [Fact]
+    public void Create_Should_Fail_When_Title_Is_Longer_Than_The_Max_Length()
+    {
+        string tooLongTitle = new('a', Book.TitleMaxLength + 1);
+
+        Result<Book> result = Book.Create(tooLongTitle, BookAuthor, PublicationYear, _dateTimeProvider);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(BookErrors.TitleTooLong, result.Error);
+    }
+
+    [Fact]
+    public void Create_Should_Succeed_When_Title_Is_Exactly_The_Max_Length()
+    {
+        string longestAllowedTitle = new('a', Book.TitleMaxLength);
+
+        Result<Book> result = Book.Create(longestAllowedTitle, BookAuthor, PublicationYear, _dateTimeProvider);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(longestAllowedTitle, result.Value.Title);
+    }
+
+    [Fact]
+    public void Create_Should_Trim_The_Title_And_The_Author()
+    {
+        Result<Book> result = Book.Create($"  {BookTitle}  ", $"  {BookAuthor}  ", PublicationYear, _dateTimeProvider);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(BookTitle, result.Value.Title);
+        Assert.Equal(BookAuthor, result.Value.Author);
+    }
+
+    [Fact]
+    public void Create_Should_Measure_The_Title_Max_Length_After_Trimming()
+    {
+        string longestAllowedTitle = new('a', Book.TitleMaxLength);
+
+        Result<Book> result = Book.Create($"  {longestAllowedTitle}  ", BookAuthor, PublicationYear, _dateTimeProvider);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(longestAllowedTitle, result.Value.Title);
+    }
+
+    [Fact]
+    public void Create_Should_Fail_When_Publication_Year_Is_In_The_Future()
+    {
+        Result<Book> result = Book.Create(BookTitle, BookAuthor, Now.Year + 1, _dateTimeProvider);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(BookErrors.PublicationYearInFuture, result.Error);
+    }
+
+    [Fact]
+    public void Create_Should_Succeed_When_Publication_Year_Is_The_Current_Year()
+    {
+        Result<Book> result = Book.Create(BookTitle, BookAuthor, Now.Year, _dateTimeProvider);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(Now.Year, result.Value.PublicationYear);
     }
 }

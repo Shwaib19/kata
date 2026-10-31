@@ -1,7 +1,9 @@
+using Kata.Api.Application;
 using Kata.Application;
 using Kata.infrastructure;
 using Scalar.AspNetCore;
 using SharedKernel;
+using SharedKernel.Messaging;
 
 const string clientCorsPolicy = "KataClient";
 
@@ -15,6 +17,7 @@ builder.Services.AddCors(options => options.AddPolicy(clientCorsPolicy, policy =
     .AllowAnyHeader()
     .AllowAnyMethod()));
 
+builder.Services.AddScoped<ISender, KataSender>();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddEndpoints(typeof(Program).Assembly);

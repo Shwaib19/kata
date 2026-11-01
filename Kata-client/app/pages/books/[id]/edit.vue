@@ -4,8 +4,8 @@ import type { BookPayload } from '~/composables/useBooks'
 const route = useRoute()
 const bookId = route.params.id as string
 
-const { read, update } = useBooks()
-const { data: book, status, error } = read(bookId)
+const { update } = useBooks()
+const book = await useBookOrFail(bookId)
 
 const { succeed, fail } = useFeedback()
 
@@ -41,23 +41,7 @@ async function saveBook(payload: BookPayload) {
       Modifier le livre
     </h1>
 
-    <p
-      v-if="status === 'pending'"
-      class="mt-8 text-ink-muted"
-    >
-      Chargement…
-    </p>
-
-    <p
-      v-else-if="error || !book"
-      class="mt-8 rounded-md border border-border-subtle bg-surface px-4 py-8 text-center text-ink-muted"
-    >
-      Ce livre n'existe pas, ou plus.
-    </p>
-
-    <!-- Rendered only once loaded, so the form receives its initial values at mount. -->
     <BookForm
-      v-else
       :initial="{
         title: book.title,
         author: book.author,

@@ -4,8 +4,6 @@
     <h1 class="text-3xl font-semibold tracking-tight">
       Réservations
     </h1>
-    <p class="mt-6 rounded-md border border-border-subtle bg-surface px-4 py-8 text-center text-ink-muted">
-      
-    </p>
+    <p class="mt-6 rounded-md border border-border-subtle bg-surface px-4 py-8 text-center text-ink-muted"/>
   </main>
 </template>

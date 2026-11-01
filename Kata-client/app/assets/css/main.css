@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/*
+  Design tokens for the library screens. Declared here rather than scattered through the
+  components so the palette can change in one place.
+*/
+@theme {
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f7f9;
+  --color-border-subtle: #e3e6ea;
+  --color-ink: #1b1f24;
+  --color-ink-muted: #5b6472;
+
+  --color-available: #157f4a;
+  --color-available-soft: #e6f4ec;
+  --color-held: #9a4b00;
+  --color-held-soft: #fdf0e2;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fbe9e7;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--color-surface-muted);
+  color: var(--color-ink);
+}

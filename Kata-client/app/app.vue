@@ -1,6 +1,6 @@
 <template>
-  <div>
+  <div class="min-h-screen">
     <NuxtRouteAnnouncer />
-    <NuxtWelcome />
+    <NuxtPage />
   </div>
 </template>

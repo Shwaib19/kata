@@ -27,4 +27,11 @@ public interface IReservationReadRepository
     /// </summary>
     Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetAll(
         Guid? readerId, CancellationToken cancellation = default);
+
+    /// <summary>
+    /// The same as <see cref="GetOpenByReader"/> for several readers at once, so a list of
+    /// readers can report how many books each one holds without one query per row.
+    /// </summary>
+    Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetOpenByReaders(
+        IReadOnlyCollection<Guid> readerIds, CancellationToken cancellation = default);
 }

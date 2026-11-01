@@ -17,4 +17,11 @@ public interface IReaderReadRepository
         string email, Guid readerId, CancellationToken cancellation = default);
 
     Task<Domain.Reader.Reader?> GetById(Guid id, CancellationToken cancellation = default);
+
+    /// <summary>
+    /// Returns the readers whose name or email contains the given fragments, case-insensitively.
+    /// A null or blank criterion is ignored, so passing none returns everyone.
+    /// </summary>
+    Task<IReadOnlyCollection<Domain.Reader.Reader>> Search(
+        string? name, string? email, CancellationToken cancellation = default);
 }

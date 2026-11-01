@@ -7,6 +7,7 @@ using Kata.Application.Features.Book.Update;
 using Kata.Application.Features.Reader;
 using Kata.Application.Features.Reader.Create;
 using Kata.Application.Features.Reader.Delete;
+using Kata.Application.Features.Reader.Search;
 using Kata.Application.Features.Reader.Update;
 using Kata.Application.Features.Reservation;
 using Kata.Application.Features.Reservation.Borrow;
@@ -47,6 +48,8 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<DeleteReaderCommand>, DeleteReaderCommandHandler>();
         services.AddScoped<IQueryHandler<ReaderGetById.GetReaderByIdQuery, ReaderResponse>,
             ReaderGetById.GetReaderByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<SearchReadersQuery, IReadOnlyCollection<ReaderSummaryResponse>>,
+            SearchReadersQueryHandler>();
 
         services.AddScoped<ICommandHandler<ReserveBookCommand, Guid>, ReserveBookCommandHandler>();
         services.AddScoped<ICommandHandler<CancelReservationCommand>, CancelReservationCommandHandler>();

@@ -91,4 +91,13 @@ internal sealed class EfReservationRepository(KataDbContext dbContext)
             .OrderByDescending(reservation => reservation.ReservedAt)
             .ToListAsync(cancellation);
     }
+
+    public async Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetOpenByReaders(
+        IReadOnlyCollection<Guid> readerIds, CancellationToken cancellation = default) =>
+        await dbContext.Reservations
+            .AsNoTracking()
+            .Where(reservation => readerIds.Contains(reservation.ReaderId) &&
+                                  (reservation.Status == ReservationStatus.Reserved ||
+                                   reservation.Status == ReservationStatus.Borrowed))
+            .ToListAsync(cancellation);
 }

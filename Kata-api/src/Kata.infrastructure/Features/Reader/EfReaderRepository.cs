@@ -26,4 +26,22 @@ internal sealed class EfReaderRepository(KataDbContext dbContext)
 
     public async Task<Domain.Reader.Reader?> GetById(Guid id, CancellationToken cancellation = default) =>
         await dbContext.Readers.FirstOrDefaultAsync(reader => reader.Id == id, cancellation);
+
+    public async Task<IReadOnlyCollection<Domain.Reader.Reader>> Search(
+        string? name, string? email, CancellationToken cancellation = default)
+    {
+        IQueryable<Domain.Reader.Reader> query = dbContext.Readers.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            query = query.Where(reader => EF.Functions.ILike(reader.Name, $"%{name.Trim()}%"));
+        }
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            query = query.Where(reader => EF.Functions.ILike(reader.Email, $"%{email.Trim()}%"));
+        }
+
+        return await query.OrderBy(reader => reader.Name).ToListAsync(cancellation);
+    }
 }

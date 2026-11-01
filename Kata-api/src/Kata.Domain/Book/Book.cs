@@ -15,6 +15,14 @@ public class Book : ISoftDeletable
     public DateTime? DeletedOnUtc { get; private set; }
 
     /// <summary>
+    /// Replaces the book's details. The same rules as <see cref="Create"/> apply, and a
+    /// rejected update leaves the book exactly as it was.
+    /// </summary>
+    public Result Update(
+        string? title, string? author, int? publicationYear, IDateTimeProvider dateTimeProvider) =>
+        throw new NotImplementedException();
+
+    /// <summary>
     /// Takes the book out of circulation without erasing it, so that past reservations
     /// keep pointing at something. Calling it twice keeps the first deletion date.
     /// </summary>

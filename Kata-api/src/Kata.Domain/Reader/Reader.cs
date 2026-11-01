@@ -15,6 +15,13 @@ public class Reader : ISoftDeletable
     public DateTime? DeletedOnUtc { get; private set; }
 
     /// <summary>
+    /// Replaces the reader's details. The same rules as <see cref="Create"/> apply, and a
+    /// rejected update leaves the reader exactly as it was.
+    /// </summary>
+    public Result Update(string? name, string? email) =>
+        throw new NotImplementedException();
+
+    /// <summary>
     /// Takes the reader out of circulation without erasing it, so that past reservations
     /// keep pointing at something. Calling it twice keeps the first deletion date.
     /// </summary>

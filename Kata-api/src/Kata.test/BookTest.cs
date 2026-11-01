@@ -141,4 +141,106 @@ public class BookTest
 
         Assert.Equal(firstDeletion, book.DeletedOnUtc);
     }
+
+    [Fact]
+    public void Update_Should_Replace_The_Title_Author_And_Publication_Year()
+    {
+        Book book = ABook();
+
+        Result result = book.Update("New Title", "New Author", 1999, _dateTimeProvider);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("New Title", book.Title);
+        Assert.Equal("New Author", book.Author);
+        Assert.Equal(1999, book.PublicationYear);
+    }
+
+    [Fact]
+    public void Update_Should_Keep_The_Identifier()
+    {
+        Book book = ABook();
+        Guid idBeforeUpdate = book.Id;
+
+        book.Update("New Title", "New Author", 1999, _dateTimeProvider);
+
+        Assert.Equal(idBeforeUpdate, book.Id);
+    }
+
+    [Fact]
+    public void Update_Should_Trim_The_Title_And_The_Author()
+    {
+        Book book = ABook();
+
+        Result result = book.Update("  New Title  ", "  New Author  ", 1999, _dateTimeProvider);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("New Title", book.Title);
+        Assert.Equal("New Author", book.Author);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Update_Should_Leave_Author_Unknown_When_Author_Is_Missing(string? missingAuthor)
+    {
+        Book book = ABook();
+
+        Result result = book.Update(BookTitle, missingAuthor, PublicationYear, _dateTimeProvider);
+
+        Assert.True(result.IsSuccess);
+        Assert.Null(book.Author);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Update_Should_Fail_When_Title_Is_Missing(string? missingTitle)
+    {
+        Book book = ABook();
+
+        Result result = book.Update(missingTitle, BookAuthor, PublicationYear, _dateTimeProvider);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(BookErrors.TitleRequired, result.Error);
+    }
+
+    [Fact]
+    public void Update_Should_Fail_When_Title_Is_Longer_Than_The_Max_Length()
+    {
+        Book book = ABook();
+        string tooLongTitle = new('a', Book.TitleMaxLength + 1);
+
+        Result result = book.Update(tooLongTitle, BookAuthor, PublicationYear, _dateTimeProvider);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(BookErrors.TitleTooLong, result.Error);
+    }
+
+    [Fact]
+    public void Update_Should_Fail_When_Publication_Year_Is_In_The_Future()
+    {
+        Book book = ABook();
+
+        Result result = book.Update(BookTitle, BookAuthor, Now.Year + 1, _dateTimeProvider);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(BookErrors.PublicationYearInFuture, result.Error);
+    }
+
+    [Fact]
+    public void Update_Should_Leave_The_Book_Untouched_When_It_Fails()
+    {
+        Book book = ABook();
+
+        book.Update(null, "New Author", 1999, _dateTimeProvider);
+
+        Assert.Equal(BookTitle, book.Title);
+        Assert.Equal(BookAuthor, book.Author);
+        Assert.Equal(PublicationYear, book.PublicationYear);
+    }
+
+    private Book ABook() =>
+        Book.Create(BookTitle, BookAuthor, PublicationYear, _dateTimeProvider).Value;
 }

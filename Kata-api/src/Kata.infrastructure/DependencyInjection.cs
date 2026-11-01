@@ -36,7 +36,9 @@ public static class DependencyInjection
         services.AddScoped<IBookReadRepository>(provider => provider.GetRequiredService<EfBookRepository>());
         services.AddScoped<IBookWriteRepository>(provider => provider.GetRequiredService<EfBookRepository>());
 
-        services.AddScoped<IReaderReadRepository, EfReaderRepository>();
+        services.AddScoped<EfReaderRepository>();
+        services.AddScoped<IReaderReadRepository>(provider => provider.GetRequiredService<EfReaderRepository>());
+        services.AddScoped<IReaderWriteRepository>(provider => provider.GetRequiredService<EfReaderRepository>());
 
         services.AddScoped<EfReservationRepository>();
         services.AddScoped<IReservationReadRepository>(provider => provider.GetRequiredService<EfReservationRepository>());

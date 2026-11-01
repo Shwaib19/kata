@@ -28,4 +28,9 @@ public static class ReaderErrors
         "Reader.EmailInvalid",
         "A reader email must be a valid email address.",
         ErrorType.Validation);
+
+    public static Error EmailAlreadyUsed => new(
+        "Reader.EmailAlreadyUsed",
+        "A reader with this email already exists.",
+        ErrorType.Conflict);
 }

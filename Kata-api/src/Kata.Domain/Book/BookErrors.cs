@@ -23,4 +23,9 @@ public static class BookErrors
         "Book.PublicationYearInFuture",
         "A book publication year cannot be in the future.",
         ErrorType.Validation);
+
+    public static Error HasActiveReservation => new(
+        "Book.HasActiveReservation",
+        "A book currently reserved or borrowed cannot be removed from the catalogue.",
+        ErrorType.Conflict);
 }

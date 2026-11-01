@@ -12,4 +12,13 @@ public interface IReservationReadRepository
     /// </summary>
     Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetOpenByReader(
         Guid readerId, CancellationToken cancellation = default);
+
+    /// <summary>
+    /// Returns the reservations of the given books that are neither cancelled nor returned.
+    /// Whether a book is actually held is decided by the caller with
+    /// <see cref="Domain.Reservation.Reservation.IsActive"/>, since availability is derived
+    /// from time and never stored.
+    /// </summary>
+    Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetOpenByBooks(
+        IReadOnlyCollection<Guid> bookIds, CancellationToken cancellation = default);
 }

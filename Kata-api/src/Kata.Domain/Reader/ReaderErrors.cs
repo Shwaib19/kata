@@ -33,4 +33,9 @@ public static class ReaderErrors
         "Reader.EmailAlreadyUsed",
         "A reader with this email already exists.",
         ErrorType.Conflict);
+
+    public static Error HasActiveReservation => new(
+        "Reader.HasActiveReservation",
+        "A reader still holding a book cannot be removed.",
+        ErrorType.Conflict);
 }

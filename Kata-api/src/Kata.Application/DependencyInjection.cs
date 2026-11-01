@@ -1,9 +1,12 @@
 using Kata.Application.Features.Book;
 using Kata.Application.Features.Book.Create;
 using Kata.Application.Features.Book.GetById;
+using Kata.Application.Features.Book.Delete;
+using Kata.Application.Features.Book.Search;
 using Kata.Application.Features.Book.Update;
 using Kata.Application.Features.Reader;
 using Kata.Application.Features.Reader.Create;
+using Kata.Application.Features.Reader.Delete;
 using Kata.Application.Features.Reader.Update;
 using Kata.Application.Features.Reservation;
 using Kata.Application.Features.Reservation.GetById;
@@ -30,10 +33,14 @@ public static class DependencyInjection
     {
         services.AddScoped<ICommandHandler<CreateBookCommand, Guid>, CreateBookCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateBookCommand>, UpdateBookCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteBookCommand>, DeleteBookCommandHandler>();
         services.AddScoped<IQueryHandler<GetBookByIdQuery, BookResponse>, GetBookByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<SearchBooksQuery, IReadOnlyCollection<BookResponse>>,
+            SearchBooksQueryHandler>();
 
         services.AddScoped<ICommandHandler<CreateReaderCommand, Guid>, CreateReaderCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateReaderCommand>, UpdateReaderCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteReaderCommand>, DeleteReaderCommandHandler>();
         services.AddScoped<IQueryHandler<ReaderGetById.GetReaderByIdQuery, ReaderResponse>,
             ReaderGetById.GetReaderByIdQueryHandler>();
 

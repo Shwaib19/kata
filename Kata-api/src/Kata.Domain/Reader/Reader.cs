@@ -18,8 +18,20 @@ public class Reader : ISoftDeletable
     /// Replaces the reader's details. The same rules as <see cref="Create"/> apply, and a
     /// rejected update leaves the reader exactly as it was.
     /// </summary>
-    public Result Update(string? name, string? email) =>
-        throw new NotImplementedException();
+    public Result Update(string? name, string? email)
+    {
+        Result<Details> details = Validate(name, email);
+
+        if (details.IsFailure)
+        {
+            return Result.Failure(details.Error);
+        }
+
+        Name = details.Value.Name;
+        Email = details.Value.Email;
+
+        return Result.Success();
+    }
 
     /// <summary>
     /// Takes the reader out of circulation without erasing it, so that past reservations
@@ -52,21 +64,37 @@ public class Reader : ISoftDeletable
 
     public static Result<Reader> Create(string? name, string? email)
     {
+        Result<Details> details = Validate(name, email);
+
+        return details.IsFailure
+            ? Result.Failure<Reader>(details.Error)
+            : Result.Success(new Reader(details.Value.Name, details.Value.Email));
+    }
+
+    /// <summary>
+    /// The details a reader is allowed to hold, once checked and normalised. Creating and
+    /// updating share this so that both enforce the same rules, and so that an update writes
+    /// nothing until every rule has passed.
+    /// </summary>
+    private readonly record struct Details(string Name, string Email);
+
+    private static Result<Details> Validate(string? name, string? email)
+    {
         if (string.IsNullOrWhiteSpace(name))
         {
-            return Result.Failure<Reader>(ReaderErrors.NameRequired);
+            return Result.Failure<Details>(ReaderErrors.NameRequired);
         }
 
         string trimmedName = name.Trim();
 
         if (trimmedName.Length > NameMaxLength)
         {
-            return Result.Failure<Reader>(ReaderErrors.NameTooLong);
+            return Result.Failure<Details>(ReaderErrors.NameTooLong);
         }
 
         if (string.IsNullOrWhiteSpace(email))
         {
-            return Result.Failure<Reader>(ReaderErrors.EmailRequired);
+            return Result.Failure<Details>(ReaderErrors.EmailRequired);
         }
 
         string normalizedEmail = email.Trim().ToLowerInvariant();
@@ -74,9 +102,9 @@ public class Reader : ISoftDeletable
         if (!MailAddress.TryCreate(normalizedEmail, out MailAddress? address) ||
             address.Address != normalizedEmail)
         {
-            return Result.Failure<Reader>(ReaderErrors.EmailInvalid);
+            return Result.Failure<Details>(ReaderErrors.EmailInvalid);
         }
 
-        return Result.Success(new Reader(trimmedName, normalizedEmail));
+        return Result.Success(new Details(trimmedName, normalizedEmail));
     }
 }

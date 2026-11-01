@@ -11,7 +11,7 @@ export interface ReaderPayload {
 }
 
 /** The screens holding a list of readers, so a mutation knows what it has made stale. */
-const listScopes = ['directory', 'picker'] as const
+const listScopes = ['directory', 'picker', 'dashboard'] as const
 
 export type ReaderListScope = typeof listScopes[number]
 

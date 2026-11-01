@@ -74,11 +74,25 @@ async function deleteBook() {
       </div>
     </dl>
 
+    <NuxtLink
+      :to="`/reservations?bookId=${book.id}`"
+      class="mt-3 inline-block text-sm underline underline-offset-4"
+    >
+      Voir son historique de réservations
+    </NuxtLink>
+
     <section class="mt-8">
       <div
         v-if="!isConfirming"
         class="flex flex-wrap gap-3"
       >
+        <NuxtLink
+          v-if="book.isAvailable"
+          :to="`/reservations/new?bookId=${book.id}`"
+          class="rounded-md border border-ink bg-ink px-3 py-2 text-sm font-medium text-surface"
+        >
+          Réserver
+        </NuxtLink>
         <NuxtLink
           :to="`/books/${book.id}/edit`"
           class="rounded-md border border-border-subtle bg-surface px-3 py-2 text-sm font-medium hover:bg-surface-muted"

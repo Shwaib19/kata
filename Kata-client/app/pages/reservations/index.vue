@@ -139,7 +139,7 @@ const badgeClass = (reservation: ReservationResponse) => {
           </p>
         </div>
 
-        <div class="flex shrink-0 items-center gap-3">
+        <div class="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
           <span
             class="rounded-full px-3 py-1 text-sm font-medium"
             :class="badgeClass(reservation)"

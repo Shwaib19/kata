@@ -6,6 +6,12 @@ public class Reservation
 {
     public static readonly TimeSpan ExpiryWindow = TimeSpan.FromHours(48);
 
+    /// <summary>
+    /// How many reservations a reader may hold at once. Enforced by the use case, which is
+    /// the only place that can count a reader's reservations.
+    /// </summary>
+    public const int MaxActivePerReader = 3;
+
     public Guid Id { get; init; }
     public Guid BookId { get; init; }
     public Guid ReaderId { get; init; }

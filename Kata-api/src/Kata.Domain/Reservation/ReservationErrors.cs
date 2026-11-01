@@ -38,4 +38,14 @@ public static class ReservationErrors
         "Reservation.NotBorrowed",
         "Only a borrowed book can be returned.",
         ErrorType.Conflict);
+
+    public static Error QuotaExceeded => new(
+        "Reservation.QuotaExceeded",
+        $"A reader cannot hold more than {Reservation.MaxActivePerReader} reservations at once.",
+        ErrorType.Conflict);
+
+    public static Error BookAlreadyReserved => new(
+        "Reservation.BookAlreadyReserved",
+        "This book is already reserved or borrowed.",
+        ErrorType.Conflict);
 }

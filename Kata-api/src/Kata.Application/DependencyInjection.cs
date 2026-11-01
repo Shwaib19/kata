@@ -1,6 +1,9 @@
 using Kata.Application.Features.Book;
 using Kata.Application.Features.Book.Create;
 using Kata.Application.Features.Book.GetById;
+using Kata.Application.Features.Reservation;
+using Kata.Application.Features.Reservation.GetById;
+using Kata.Application.Features.Reservation.Reserve;
 using Microsoft.Extensions.DependencyInjection;
 using SharedKernel.Messaging;
 
@@ -22,6 +25,9 @@ public static class DependencyInjection
     {
         services.AddScoped<ICommandHandler<CreateBookCommand, Guid>, CreateBookCommandHandler>();
         services.AddScoped<IQueryHandler<GetBookByIdQuery, BookResponse>, GetBookByIdQueryHandler>();
+
+        services.AddScoped<ICommandHandler<ReserveBookCommand, Guid>, ReserveBookCommandHandler>();
+        services.AddScoped<IQueryHandler<GetReservationByIdQuery, ReservationResponse>, GetReservationByIdQueryHandler>();
 
         return services;
     }

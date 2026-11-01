@@ -10,12 +10,12 @@ public sealed record ReaderResponse(
 {
     public static ReaderResponse FromDomain(
         Domain.Reader.Reader reader,
-        IEnumerable<Domain.Reservation.Reservation> currentReservations,
+        IEnumerable<ReservationDetails> currentReservations,
         DateTime utcNow) =>
         new(reader.Id,
             reader.Name,
             reader.Email,
             currentReservations
-                .Select(reservation => ReservationResponse.FromDomain(reservation, utcNow))
+                .Select(details => ReservationResponse.FromDomain(details, utcNow))
                 .ToArray());
 }

@@ -12,11 +12,11 @@ internal sealed class GetReservationByIdQueryHandler(
     public async Task<Result<ReservationResponse>> Handle(
         GetReservationByIdQuery query, CancellationToken cancellationToken)
     {
-        Domain.Reservation.Reservation? reservation =
-            await reservationReadRepository.GetById(query.ReservationId, cancellationToken);
+        ReservationDetails? details =
+            await reservationReadRepository.GetDetailsById(query.ReservationId, cancellationToken);
 
-        return reservation is null
+        return details is null
             ? Result.Failure<ReservationResponse>(ReservationErrors.NotFound)
-            : Result.Success(ReservationResponse.FromDomain(reservation, dateTimeProvider.UtcNow));
+            : Result.Success(ReservationResponse.FromDomain(details, dateTimeProvider.UtcNow));
     }
 }

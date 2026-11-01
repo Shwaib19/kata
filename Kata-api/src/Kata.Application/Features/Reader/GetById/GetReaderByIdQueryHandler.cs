@@ -25,13 +25,13 @@ internal sealed class GetReaderByIdQueryHandler(
 
         // "Current" excludes the reservations that lapsed without being picked up, which the
         // stored status cannot tell apart from the live ones.
-        IReadOnlyCollection<Domain.Reservation.Reservation> open =
-            await reservationReadRepository.GetOpenByReader(query.ReaderId, cancellationToken);
+        IReadOnlyCollection<ReservationDetails> open =
+            await reservationReadRepository.GetOpenDetailsByReader(query.ReaderId, cancellationToken);
 
         return Result.Success(
             ReaderResponse.FromDomain(
                 reader,
-                open.Where(reservation => reservation.IsActive(utcNow)),
+                open.Where(details => details.Reservation.IsActive(utcNow)),
                 utcNow));
     }
 }

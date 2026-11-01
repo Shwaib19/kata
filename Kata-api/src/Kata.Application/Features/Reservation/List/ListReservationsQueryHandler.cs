@@ -11,14 +11,14 @@ internal sealed class ListReservationsQueryHandler(
     public async Task<Result<IReadOnlyCollection<ReservationResponse>>> Handle(
         ListReservationsQuery query, CancellationToken cancellationToken)
     {
-        IReadOnlyCollection<Domain.Reservation.Reservation> reservations =
-            await reservationReadRepository.GetAll(query.ReaderId, cancellationToken);
+        IReadOnlyCollection<ReservationDetails> reservations =
+            await reservationReadRepository.GetAll(query.ReaderId, query.BookId, cancellationToken);
 
         DateTime utcNow = dateTimeProvider.UtcNow;
 
         return Result.Success<IReadOnlyCollection<ReservationResponse>>(
             reservations
-                .Select(reservation => ReservationResponse.FromDomain(reservation, utcNow))
+                .Select(details => ReservationResponse.FromDomain(details, utcNow))
                 .ToArray());
     }
 }

@@ -68,6 +68,21 @@ internal sealed class EfReservationRepository(KataDbContext dbContext)
                                    reservation.Status == ReservationStatus.Borrowed))
             .ToListAsync(cancellation);
 
+    public async Task<ReservationDetails?> GetDetailsById(Guid id, CancellationToken cancellation = default) =>
+        await WithNames(dbContext.Reservations
+                .AsNoTracking()
+                .Where(reservation => reservation.Id == id))
+            .FirstOrDefaultAsync(cancellation);
+
+    public async Task<IReadOnlyCollection<ReservationDetails>> GetOpenDetailsByReader(
+        Guid readerId, CancellationToken cancellation = default) =>
+        await WithNames(dbContext.Reservations
+                .AsNoTracking()
+                .Where(reservation => reservation.ReaderId == readerId &&
+                                      (reservation.Status == ReservationStatus.Reserved ||
+                                       reservation.Status == ReservationStatus.Borrowed)))
+            .ToListAsync(cancellation);
+
     public async Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetOpenByBooks(
         IReadOnlyCollection<Guid> bookIds, CancellationToken cancellation = default) =>
         await dbContext.Reservations
@@ -77,8 +92,8 @@ internal sealed class EfReservationRepository(KataDbContext dbContext)
                                    reservation.Status == ReservationStatus.Borrowed))
             .ToListAsync(cancellation);
 
-    public async Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetAll(
-        Guid? readerId, CancellationToken cancellation = default)
+    public async Task<IReadOnlyCollection<ReservationDetails>> GetAll(
+        Guid? readerId, Guid? bookId, CancellationToken cancellation = default)
     {
         IQueryable<Domain.Reservation.Reservation> query = dbContext.Reservations.AsNoTracking();
 
@@ -87,10 +102,32 @@ internal sealed class EfReservationRepository(KataDbContext dbContext)
             query = query.Where(reservation => reservation.ReaderId == readerId);
         }
 
-        return await query
-            .OrderByDescending(reservation => reservation.ReservedAt)
-            .ToListAsync(cancellation);
+        if (bookId is not null)
+        {
+            query = query.Where(reservation => reservation.BookId == bookId);
+        }
+
+        return await WithNames(query).ToListAsync(cancellation);
     }
+
+    /// <summary>
+    /// Attaches the book title and the reader name to each reservation.
+    ///
+    /// Query filters are ignored on purpose: a book taken out of the catalogue still has a
+    /// history, and hiding its soft-deleted row would drop those reservations from the result.
+    /// The joins can stay inner joins because both foreign keys restrict deletion, so the rows
+    /// they point at are always present.
+    /// </summary>
+    private IQueryable<ReservationDetails> WithNames(
+        IQueryable<Domain.Reservation.Reservation> reservations) =>
+        (from reservation in reservations
+         join book in dbContext.Books on reservation.BookId equals book.Id
+         join reader in dbContext.Readers on reservation.ReaderId equals reader.Id
+         // Ordered here rather than by the caller: once projected, ReservedAt belongs to a
+         // type built in C#, and a sort over it can no longer be translated to SQL.
+         orderby reservation.ReservedAt descending
+         select new ReservationDetails(reservation, book.Title, reader.Name))
+        .IgnoreQueryFilters();
 
     public async Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetOpenByReaders(
         IReadOnlyCollection<Guid> readerIds, CancellationToken cancellation = default) =>

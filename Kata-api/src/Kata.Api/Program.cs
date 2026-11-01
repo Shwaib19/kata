@@ -34,11 +34,11 @@ await using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
     await scope.ServiceProvider.GetRequiredService<KataDbContext>().Database.MigrateAsync();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
+// Exposed in every environment rather than in development only: the API reference is part of
+// what this project delivers, and the container runs in Production. A system open to the
+// internet would put it behind authentication instead.
+app.MapOpenApi();
+app.MapScalarApiReference();
 
 app.UseExceptionHandler();
 app.UseCors(clientCorsPolicy);

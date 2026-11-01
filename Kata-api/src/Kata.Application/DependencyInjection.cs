@@ -1,8 +1,10 @@
 using Kata.Application.Features.Book;
 using Kata.Application.Features.Book.Create;
 using Kata.Application.Features.Book.GetById;
+using Kata.Application.Features.Book.Update;
 using Kata.Application.Features.Reader;
 using Kata.Application.Features.Reader.Create;
+using Kata.Application.Features.Reader.Update;
 using Kata.Application.Features.Reservation;
 using Kata.Application.Features.Reservation.GetById;
 using ReaderGetById = Kata.Application.Features.Reader.GetById;
@@ -27,9 +29,11 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandler<CreateBookCommand, Guid>, CreateBookCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateBookCommand>, UpdateBookCommandHandler>();
         services.AddScoped<IQueryHandler<GetBookByIdQuery, BookResponse>, GetBookByIdQueryHandler>();
 
         services.AddScoped<ICommandHandler<CreateReaderCommand, Guid>, CreateReaderCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateReaderCommand>, UpdateReaderCommandHandler>();
         services.AddScoped<IQueryHandler<ReaderGetById.GetReaderByIdQuery, ReaderResponse>,
             ReaderGetById.GetReaderByIdQueryHandler>();
 

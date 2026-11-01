@@ -78,6 +78,12 @@ public class Reader : ISoftDeletable
     /// </summary>
     private readonly record struct Details(string Name, string Email);
 
+    /// <summary>
+    /// How an email is stored, so that a caller needing to look one up compares it the same
+    /// way this entity does rather than reimplementing the rule.
+    /// </summary>
+    public static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
+
     private static Result<Details> Validate(string? name, string? email)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -97,7 +103,7 @@ public class Reader : ISoftDeletable
             return Result.Failure<Details>(ReaderErrors.EmailRequired);
         }
 
-        string normalizedEmail = email.Trim().ToLowerInvariant();
+        string normalizedEmail = NormalizeEmail(email);
 
         if (!MailAddress.TryCreate(normalizedEmail, out MailAddress? address) ||
             address.Address != normalizedEmail)

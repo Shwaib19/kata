@@ -19,6 +19,11 @@ internal sealed class EfReaderRepository(KataDbContext dbContext)
     public async Task<bool> ExistsByEmail(string email, CancellationToken cancellation = default) =>
         await dbContext.Readers.AnyAsync(reader => reader.Email == email, cancellation);
 
+    public async Task<bool> EmailBelongsToAnotherReader(
+        string email, Guid readerId, CancellationToken cancellation = default) =>
+        await dbContext.Readers.AnyAsync(
+            reader => reader.Email == email && reader.Id != readerId, cancellation);
+
     public async Task<Domain.Reader.Reader?> GetById(Guid id, CancellationToken cancellation = default) =>
         await dbContext.Readers.FirstOrDefaultAsync(reader => reader.Id == id, cancellation);
 }

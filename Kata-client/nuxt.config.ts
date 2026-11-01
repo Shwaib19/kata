@@ -12,6 +12,15 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
+  // The browser needs this value too, hence `public`. It is overridable at run time with
+  // NUXT_PUBLIC_API_BASE, which is how the container will point at the API service rather
+  // than at localhost.
+  runtimeConfig: {
+    public: {
+      apiBase: 'http://localhost:5199',
+    },
+  },
+
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 })

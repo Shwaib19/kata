@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!--
+            The PostgreSQL driver pulls in an older EF Core Relational than the rest of the
+            solution. Naming the version the API uses settles which one is loaded, instead of
+            leaving the build to pick one and warn about it.
+        -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.14" />
+        <!-- Used directly: the test asserts on the driver's unique-violation code. -->
+        <PackageReference Include="Npgsql" Version="10.0.3" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="xunit" Version="2.9.3" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Kata.Application\Kata.Application.csproj" />
+      <ProjectReference Include="..\Kata.Domain\Kata.Domain.csproj" />
+      <ProjectReference Include="..\Kata.infrastructure\Kata.infrastructure.csproj" />
+      <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
+    </ItemGroup>
+
+</Project>

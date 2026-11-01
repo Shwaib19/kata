@@ -23,11 +23,22 @@ export interface BookResponse {
 export interface ReservationResponse {
   id: string
   bookId: string
+  /** Carried by the API so a listing needs no lookup per row. */
+  bookTitle: string
   readerId: string
+  readerName: string
   status: ReservationStatus
   reservedAt: string
   borrowedAt: string | null
   returnedAt: string | null
+}
+
+/** A reader as a list shows one: the reservations are summed up rather than listed. */
+export interface ReaderSummaryResponse {
+  id: string
+  name: string
+  email: string
+  activeReservationCount: number
 }
 
 export interface ReaderResponse {

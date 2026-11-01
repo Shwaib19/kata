@@ -43,6 +43,14 @@ internal sealed class ReserveBookCommandHandler(
             return Result.Failure<Guid>(ReservationErrors.QuotaExceeded);
         }
 
+        // Reading a reservation derives its expiry, but the uniqueness guarantee is built on the
+        // stored status: a lapsed reservation left as Reserved would hold its book for good.
+        // This is the one place that writes Expired, and it must run before the insert.
+        await reservationWriteRepository.ExpireLapsed(
+            command.BookId,
+            utcNow - Domain.Reservation.Reservation.ExpiryWindow,
+            cancellationToken);
+
         Result<Domain.Reservation.Reservation> reservation =
             Domain.Reservation.Reservation.Create(command.BookId, command.ReaderId, dateTimeProvider);
 
@@ -52,8 +60,13 @@ internal sealed class ReserveBookCommandHandler(
         }
 
         await reservationWriteRepository.Add(reservation.Value, cancellationToken);
-        await reservationWriteRepository.SaveChanges(cancellationToken);
 
-        return Result.Success(reservation.Value.Id);
+        // The check above can be outrun by another request reserving the same book. The store
+        // is the only thing able to settle that, so its refusal is returned as it stands.
+        Result saved = await reservationWriteRepository.SaveChanges(cancellationToken);
+
+        return saved.IsFailure
+            ? Result.Failure<Guid>(saved.Error)
+            : Result.Success(reservation.Value.Id);
     }
 }

@@ -9,7 +9,11 @@ using Kata.Application.Features.Reader.Create;
 using Kata.Application.Features.Reader.Delete;
 using Kata.Application.Features.Reader.Update;
 using Kata.Application.Features.Reservation;
+using Kata.Application.Features.Reservation.Borrow;
+using Kata.Application.Features.Reservation.Cancel;
 using Kata.Application.Features.Reservation.GetById;
+using Kata.Application.Features.Reservation.List;
+using Kata.Application.Features.Reservation.Return;
 using ReaderGetById = Kata.Application.Features.Reader.GetById;
 using Kata.Application.Features.Reservation.Reserve;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,7 +49,12 @@ public static class DependencyInjection
             ReaderGetById.GetReaderByIdQueryHandler>();
 
         services.AddScoped<ICommandHandler<ReserveBookCommand, Guid>, ReserveBookCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelReservationCommand>, CancelReservationCommandHandler>();
+        services.AddScoped<ICommandHandler<BorrowReservationCommand>, BorrowReservationCommandHandler>();
+        services.AddScoped<ICommandHandler<ReturnReservationCommand>, ReturnReservationCommandHandler>();
         services.AddScoped<IQueryHandler<GetReservationByIdQuery, ReservationResponse>, GetReservationByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<ListReservationsQuery, IReadOnlyCollection<ReservationResponse>>,
+            ListReservationsQueryHandler>();
 
         return services;
     }

@@ -21,4 +21,10 @@ public interface IReservationReadRepository
     /// </summary>
     Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetOpenByBooks(
         IReadOnlyCollection<Guid> bookIds, CancellationToken cancellation = default);
+
+    /// <summary>
+    /// Every reservation ever made, most recent first, optionally narrowed to one reader.
+    /// </summary>
+    Task<IReadOnlyCollection<Domain.Reservation.Reservation>> GetAll(
+        Guid? readerId, CancellationToken cancellation = default);
 }

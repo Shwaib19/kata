@@ -26,12 +26,10 @@ async function addReader(payload: ReaderPayload) {
 
 <template>
   <main class="mx-auto max-w-2xl px-4 py-10">
-    <NuxtLink
-      to="/readers"
-      class="text-sm text-ink-muted underline underline-offset-4 hover:text-ink"
-    >
-      ← Lecteurs
-    </NuxtLink>
+    <BackLink
+      fallback="/readers"
+      fallback-label="Lecteurs"
+    />
 
     <h1 class="mt-4 text-3xl font-semibold tracking-tight">
       Inscrire un lecteur

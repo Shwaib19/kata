@@ -30,12 +30,10 @@ async function saveReader(payload: ReaderPayload) {
 
 <template>
   <main class="mx-auto max-w-2xl px-4 py-10">
-    <NuxtLink
-      :to="`/readers/${readerId}`"
-      class="text-sm text-ink-muted underline underline-offset-4 hover:text-ink"
-    >
-      ← Retour au lecteur
-    </NuxtLink>
+    <BackLink
+      :fallback="`/readers/${readerId}`"
+      fallback-label="Lecteur"
+    />
 
     <h1 class="mt-4 text-3xl font-semibold tracking-tight">
       Modifier le lecteur

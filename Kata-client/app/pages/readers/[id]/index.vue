@@ -35,12 +35,10 @@ const formatDate = (value: string) => dateFormat.format(new Date(value))
 
 <template>
   <main class="mx-auto max-w-4xl px-4 py-10">
-    <NuxtLink
-      to="/readers"
-      class="text-sm text-ink-muted underline underline-offset-4 hover:text-ink"
-    >
-      ← Lecteurs
-    </NuxtLink>
+    <BackLink
+      fallback="/readers"
+      fallback-label="Lecteurs"
+    />
 
     <header class="mt-4 flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -63,9 +61,18 @@ const formatDate = (value: string) => dateFormat.format(new Date(value))
     </header>
 
     <section class="mt-8">
-      <h2 class="text-lg font-semibold">
-        Réservations en cours
-      </h2>
+      <div class="flex flex-wrap items-baseline justify-between gap-3">
+        <h2 class="text-lg font-semibold">
+          Réservations en cours
+        </h2>
+
+        <NuxtLink
+          :to="`/reservations/new?readerId=${reader.id}`"
+          class="rounded-md border border-ink bg-ink px-3 py-2 text-sm font-medium text-surface"
+        >
+          Réserver un livre
+        </NuxtLink>
+      </div>
 
       <p
         v-if="reader.currentReservations.length === 0"
@@ -105,6 +112,13 @@ const formatDate = (value: string) => dateFormat.format(new Date(value))
           </NuxtLink>
         </li>
       </ul>
+
+      <NuxtLink
+        :to="`/reservations?readerId=${reader.id}`"
+        class="mt-3 inline-block text-sm underline underline-offset-4"
+      >
+        Voir tout son historique
+      </NuxtLink>
     </section>
 
     <section class="mt-8">

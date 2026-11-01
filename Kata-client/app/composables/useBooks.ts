@@ -15,7 +15,7 @@ export interface BookPayload {
  * The screens that hold a list of books. Naming them here rather than letting each page invent
  * a cache key means a mutation knows exactly what it has made stale.
  */
-const listScopes = ['catalogue', 'dashboard'] as const
+const listScopes = ['catalogue', 'dashboard', 'picker'] as const
 
 export type BookListScope = typeof listScopes[number]
 
@@ -53,7 +53,7 @@ export function useBooks() {
 
   async function create(payload: BookPayload): Promise<string> {
     const id = await send<string>('/books', { method: 'POST', body: payload })
-    await refreshLists()
+    await refreshBookLists()
 
     return id
   }
@@ -62,13 +62,13 @@ export function useBooks() {
   async function update(id: string, payload: BookPayload): Promise<void> {
     await send(`/books/${id}`, { method: 'PUT', body: payload })
     await refreshNuxtData(bookKey(id))
-    await refreshLists()
+    await refreshBookLists()
   }
 
   async function remove(id: string): Promise<void> {
     await send(`/books/${id}`, { method: 'DELETE' })
     // The book itself is not refreshed: it is gone, and the caller is leaving its page.
-    await refreshLists()
+    await refreshBookLists()
   }
 
   return { search, read, create, update, remove }
@@ -78,7 +78,7 @@ const listKey = (scope: BookListScope) => `books:${scope}`
 const bookKey = (id: string) => `book:${id}`
 
 /**
- * Every list of books now shows something out of date. Refreshing here rather than in each
- * page means no screen can forget to.
+ * Every list of books now shows something out of date. Exported because a reservation changes
+ * availability too, so that feature has to be able to say so.
  */
-const refreshLists = () => refreshNuxtData(listScopes.map(listKey))
+export const refreshBookLists = () => refreshNuxtData(listScopes.map(listKey))

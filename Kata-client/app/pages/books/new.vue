@@ -25,12 +25,10 @@ async function addBook(payload: BookPayload) {
 
 <template>
   <main class="mx-auto max-w-2xl px-4 py-10">
-    <NuxtLink
-      to="/books"
-      class="text-sm text-ink-muted underline underline-offset-4 hover:text-ink"
-    >
-      ← Catalogue
-    </NuxtLink>
+    <BackLink
+      fallback="/books"
+      fallback-label="Catalogue"
+    />
 
     <h1 class="mt-4 text-3xl font-semibold tracking-tight">
       Ajouter un livre

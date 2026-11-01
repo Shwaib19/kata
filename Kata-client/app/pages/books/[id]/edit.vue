@@ -30,12 +30,10 @@ async function saveBook(payload: BookPayload) {
 
 <template>
   <main class="mx-auto max-w-2xl px-4 py-10">
-    <NuxtLink
-      :to="`/books/${bookId}`"
-      class="text-sm text-ink-muted underline underline-offset-4 hover:text-ink"
-    >
-      ← Retour au livre
-    </NuxtLink>
+    <BackLink
+      :fallback="`/books/${bookId}`"
+      fallback-label="Livre"
+    />
 
     <h1 class="mt-4 text-3xl font-semibold tracking-tight">
       Modifier le livre

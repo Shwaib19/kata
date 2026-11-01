@@ -11,7 +11,7 @@ export interface ReaderPayload {
 }
 
 /** The screens holding a list of readers, so a mutation knows what it has made stale. */
-const listScopes = ['directory'] as const
+const listScopes = ['directory', 'picker'] as const
 
 export type ReaderListScope = typeof listScopes[number]
 
@@ -42,7 +42,7 @@ export function useReaders() {
 
   async function create(payload: ReaderPayload): Promise<string> {
     const id = await send<string>('/readers', { method: 'POST', body: payload })
-    await refreshLists()
+    await refreshReaderLists()
 
     return id
   }
@@ -50,12 +50,12 @@ export function useReaders() {
   async function update(id: string, payload: ReaderPayload): Promise<void> {
     await send(`/readers/${id}`, { method: 'PUT', body: payload })
     await refreshNuxtData(readerKey(id))
-    await refreshLists()
+    await refreshReaderLists()
   }
 
   async function remove(id: string): Promise<void> {
     await send(`/readers/${id}`, { method: 'DELETE' })
-    await refreshLists()
+    await refreshReaderLists()
   }
 
   return { search, read, create, update, remove }
@@ -64,4 +64,5 @@ export function useReaders() {
 const listKey = (scope: ReaderListScope) => `readers:${scope}`
 const readerKey = (id: string) => `reader:${id}`
 
-const refreshLists = () => refreshNuxtData(listScopes.map(listKey))
+/** Exported for the same reason as the books one: a reservation moves a reader's quota. */
+export const refreshReaderLists = () => refreshNuxtData(listScopes.map(listKey))

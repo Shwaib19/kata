@@ -81,5 +81,11 @@ const isMenuOpen = ref(false)
     </header>
 
     <slot />
+
+    <!-- Toasts are rendered once, here, so every screen reports its outcome the same way. -->
+    <Toaster
+      position="top-center"
+      rich-colors
+    />
   </div>
 </template>

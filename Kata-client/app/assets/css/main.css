@@ -15,7 +15,9 @@
   --color-available-soft: #e6f4ec;
   --color-held: #9a4b00;
   --color-held-soft: #fdf0e2;
-  --color-danger: #b3261e;
+  --color-danger: #c62828;
+  /* Darker, so an outline stays visible against a danger-coloured fill. */
+  --color-danger-strong: #8c1d18;
   --color-danger-soft: #fbe9e7;
 }
 

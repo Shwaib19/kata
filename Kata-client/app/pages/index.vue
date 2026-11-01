@@ -4,7 +4,7 @@ import type { BookFilters } from '~/composables/useBooks'
 // The dashboard reads the whole catalogue: the counters below are the only place the numbers
 // come from, so they cannot drift from what the Livres page shows.
 const { search } = useBooks()
-const { data: books, status } = search(ref<BookFilters>({}))
+const { data: books, status } = search(ref<BookFilters>({}), 'dashboard-books')
 
 const available = computed(() => books.value.filter(book => book.isAvailable).length)
 const held = computed(() => books.value.length - available.value)

@@ -2,11 +2,11 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint'],
+  modules: ['@nuxt/eslint', 'vue-sonner/nuxt'],
 
   // Tailwind 4 ships as a Vite plugin rather than a PostCSS step, so it is registered here
   // and the stylesheet below is the single entry point that imports it.
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', 'vue-sonner/style.css'],
 
   vite: {
     plugins: [tailwindcss()],

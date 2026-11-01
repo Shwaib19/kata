@@ -16,7 +16,7 @@ watch(filters, (value) => {
 }, { deep: true })
 
 const { search } = useBooks()
-const { data: books, status, error } = search(appliedFilters)
+const { data: books, status, error } = search(appliedFilters, 'catalogue-books')
 
 // Availability is filtered here rather than by the API: it is derived from the reservations
 // holding each book, so the server would have to compute the whole catalogue before it could
@@ -120,25 +120,29 @@ const visibleBooks = computed(() => books.value.filter((book) => {
       <li
         v-for="book in visibleBooks"
         :key="book.id"
-        class="flex items-center justify-between gap-4 px-4 py-3"
       >
-        <div>
-          <p class="font-medium">
-            {{ book.title }}
-          </p>
-          <p class="text-sm text-ink-muted">
-            {{ book.author ?? 'Auteur inconnu' }}
-            <template v-if="book.publicationYear"> · {{ book.publicationYear }}</template>
-          </p>
-        </div>
-        <span
-          class="shrink-0 rounded-full px-3 py-1 text-sm font-medium"
-          :class="book.isAvailable
-            ? 'bg-available-soft text-available'
-            : 'bg-held-soft text-held'"
+        <NuxtLink
+          :to="`/books/${book.id}`"
+          class="flex items-center justify-between gap-4 px-4 py-3 hover:bg-surface-muted"
         >
-          {{ book.isAvailable ? 'Disponible' : 'Indisponible' }}
-        </span>
+          <div>
+            <p class="font-medium">
+              {{ book.title }}
+            </p>
+            <p class="text-sm text-ink-muted">
+              {{ book.author ?? 'Auteur inconnu' }}
+              <template v-if="book.publicationYear"> · {{ book.publicationYear }}</template>
+            </p>
+          </div>
+          <span
+            class="shrink-0 rounded-full px-3 py-1 text-sm font-medium"
+            :class="book.isAvailable
+              ? 'bg-available-soft text-available'
+              : 'bg-held-soft text-held'"
+          >
+            {{ book.isAvailable ? 'Disponible' : 'Indisponible' }}
+          </span>
+        </NuxtLink>
       </li>
     </ul>
   </main>

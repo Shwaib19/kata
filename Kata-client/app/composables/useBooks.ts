@@ -14,18 +14,31 @@ export interface BookPayload {
 /**
  * The catalogue, as the screens see it.
  *
- * `search` wraps `useFetch`, so it must be called from a component's setup: it renders on the
- * server and exposes `refresh`, which is what an action calls once it has changed something.
- * The mutations go through `send`, which normalises refusals into an `ApiError`.
+ * `search` and `read` wrap `useFetch`, so they must be called from a component's setup: they
+ * render on the server and expose `refresh`, which is what an action calls once it has changed
+ * something. The mutations go through `send`, which normalises refusals into an `ApiError`.
  */
 export function useBooks() {
   const { send, baseURL } = useApi()
 
-  function search(filters: Ref<BookFilters>) {
+  /**
+   * @param key Distinguishes one caller's data from another's. `useFetch` caches by key, and
+   * wrapping it in a composable means every caller would otherwise share the one it derives
+   * from this call site — the dashboard and the catalogue would fight over the same entry.
+   */
+  function search(filters: Ref<BookFilters>, key: string) {
     return useFetch<BookResponse[]>('/books', {
+      key,
       baseURL,
       query: filters,
       default: () => [],
+    })
+  }
+
+  function read(id: string) {
+    return useFetch<BookResponse>(`/books/${id}`, {
+      key: `book:${id}`,
+      baseURL,
     })
   }
 
@@ -41,5 +54,5 @@ export function useBooks() {
     await send(`/books/${id}`, { method: 'DELETE' })
   }
 
-  return { search, create, update, remove }
+  return { search, read, create, update, remove }
 }

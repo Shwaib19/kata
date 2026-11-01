@@ -9,12 +9,51 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # A named volume, so stopping the stack does not lose the library.
       - kata-database-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kata -d kata"]
       interval: 5s
       timeout: 5s
       retries: 10
+
+  api:
+    build: ./Kata-api
+    container_name: kata-api
+    depends_on:
+      database:
+        # Waits for the database to answer, not merely to have started: the API applies its
+        # migrations on startup and would fail against a server still booting.
+        condition: service_healthy
+    environment:
+      # The host is the service name, resolved on the compose network.
+      ConnectionStrings__Database: "Host=database;Port=5432;Database=kata;Username=kata;Password=kata"
+      # The origin the browser calls from, which is the published port of the client below.
+      Cors__AllowedOrigins__0: "http://localhost:3000"
+    ports:
+      - "5199:8080"
+    healthcheck:
+      # The ASP.NET runtime image ships neither curl nor wget, so the check opens a socket with
+      # bash itself and reads the status line. Single quotes keep the \r\n literal for printf.
+      test: ["CMD", "bash", "-c", 'exec 3<>/dev/tcp/127.0.0.1/8080 && printf "GET /health HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3 && head -1 <&3 | grep -q "200 OK"']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  client:
+    build: ./Kata-client
+    container_name: kata-client
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      # Server rendering talks to the API over the compose network...
+      NUXT_API_BASE: "http://api:8080"
+      # ...while the browser uses the published port, which is all it can resolve.
+      NUXT_PUBLIC_API_BASE: "http://localhost:5199"
+    ports:
+      - "3000:3000"
 
 volumes:
   kata-database-data:

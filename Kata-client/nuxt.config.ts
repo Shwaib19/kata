@@ -12,11 +12,17 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-  // The browser needs this value too, hence `public`. It is overridable at run time with
-  // NUXT_PUBLIC_API_BASE, which is how the container will point at the API service rather
-  // than at localhost.
   runtimeConfig: {
+    /*
+      Where the API is reachable from the server rendering the page. In Docker that is the
+      service name on the compose network, which the browser cannot resolve — hence two
+      values. Empty means "same as the public one", which is the case outside a container.
+      Overridable with NUXT_API_BASE.
+    */
+    apiBase: '',
+
     public: {
+      // Where the API is reachable from the browser. Overridable with NUXT_PUBLIC_API_BASE.
       apiBase: 'http://localhost:5199',
     },
   },

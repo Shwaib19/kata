@@ -48,7 +48,16 @@ function toApiError(error: unknown): ApiError {
  * runs during server rendering and would be wasted here.
  */
 export function useApi() {
-  const baseURL = useRuntimeConfig().public.apiBase
+  const config = useRuntimeConfig()
+
+  /*
+    Server rendering and the browser do not reach the API by the same address once both run in
+    containers: the server uses the compose network, the browser the published port. The same
+    `useFetch` therefore resolves a different base depending on where it executes.
+  */
+  const baseURL = import.meta.server
+    ? config.apiBase || config.public.apiBase
+    : config.public.apiBase
 
   async function send<T>(path: string, options: Parameters<typeof $fetch>[1] = {}): Promise<T> {
     try {

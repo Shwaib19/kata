@@ -1,6 +1,8 @@
 using Kata.Api.Application;
 using Kata.Application;
 using Kata.infrastructure;
+using Kata.infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using SharedKernel;
 using SharedKernel.Messaging;
@@ -23,6 +25,14 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddEndpoints(typeof(Program).Assembly);
 
 WebApplication app = builder.Build();
+
+// The schema is brought up to date at startup so that `docker compose up` yields a working
+// application with no extra step. A deployed system would run migrations as a separate job,
+// before the new version starts serving: here a single instance owns the database.
+await using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
+{
+    await scope.ServiceProvider.GetRequiredService<KataDbContext>().Database.MigrateAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {

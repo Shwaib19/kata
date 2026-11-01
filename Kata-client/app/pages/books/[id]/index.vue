@@ -96,6 +96,12 @@ async function deleteBook() {
           v-if="!isConfirming"
           class="flex flex-wrap gap-3"
         >
+          <NuxtLink
+            :to="`/books/${book.id}/edit`"
+            class="rounded-md border border-border-subtle bg-surface px-3 py-2 text-sm font-medium hover:bg-surface-muted"
+          >
+            Modifier
+          </NuxtLink>
           <button
             type="button"
             class="rounded-md border border-danger px-3 py-2 text-sm font-medium text-danger hover:bg-danger-soft"

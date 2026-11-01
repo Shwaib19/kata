@@ -16,7 +16,7 @@ watch(filters, (value) => {
 }, { deep: true })
 
 const { search } = useBooks()
-const { data: books, status, error } = search(appliedFilters, 'catalogue-books')
+const { data: books, status, error } = search(appliedFilters, 'catalogue')
 
 // Availability is filtered here rather than by the API: it is derived from the reservations
 // holding each book, so the server would have to compute the whole catalogue before it could
@@ -55,6 +55,13 @@ const visibleBooks = computed(() => books.value.filter((book) => {
           {{ visibleBooks.length }} livre(s)
         </p>
       </div>
+
+      <NuxtLink
+        to="/books/new"
+        class="rounded-md border border-ink bg-ink px-4 py-2 text-sm font-medium text-surface"
+      >
+        Ajouter un livre
+      </NuxtLink>
     </header>
 
     <div class="mt-6 grid gap-3 sm:grid-cols-2">

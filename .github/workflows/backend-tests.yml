@@ -15,6 +15,26 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    # The integration tests check a guarantee that lives in PostgreSQL, so they need a real
+    # one. The same image as docker-compose, to test against the version the app runs on.
+    services:
+      database:
+        image: postgres:18.1-alpine
+        env:
+          POSTGRES_DB: kata_tests
+          POSTGRES_USER: kata
+          POSTGRES_PASSWORD: kata
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      KATA_TEST_DATABASE: Host=localhost;Port=5432;Database=kata_tests;Username=kata;Password=kata
+
     defaults:
       run:
         working-directory: Kata-api
